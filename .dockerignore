@@ -1,0 +1,8 @@
+.devcontainer
+_output
+db/*
+.env
+.git
+bin/
+README.md
+Makefile
