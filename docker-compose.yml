@@ -7,48 +7,30 @@ services:
   #   ports:
   #     - ${APP_LISTEN_PORT}:${APP_LISTEN_PORT}
   #   depends_on:
-  #     - mysql
+  #     - postgres
   #   volumes:
   #     - ./:/app
   #   networks:
-  #     - lexicon_definition
-  mysql:
-    image: "mysql/mysql-server:8.0"
+  #     - lexicon_bo
+  postgres:
+    image: "postgres:16.2"
     ports:
-      - ${APP_MYSQL_PORT}:${APP_MYSQL_PORT}
+      - ${APP_POSTGRES_PORT}:${APP_POSTGRES_PORT}
     environment:
-      MYSQL_ROOT_PASSWORD: "${APP_MYSQL_PASSWORD}"
-      MYSQL_ROOT_HOST: "%"
-      MYSQL_DATABASE: "${APP_MYSQL_DB_NAME}"
-      MYSQL_USER: "${APP_MYSQL_USERNAME}"
-      MYSQL_PASSWORD: "${APP_MYSQL_PASSWORD}"
-      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      POSTGRES_ROOT_PASSWORD: "${APP_POSTGRES_PASSWORD}"
+      POSTGRES_ROOT_HOST: "%"
+      POSTGRES_DATABASE: "${APP_POSTGRES_DB_NAME}"
+      POSTGRES_USER: "${APP_POSTGRES_USERNAME}"
+      POSTGRES_PASSWORD: "${APP_POSTGRES_PASSWORD}"
+      POSTGRES_ALLOW_EMPTY_PASSWORD: 1
     volumes:
-      - "definition-mysql:/var/lib/mysql"
+      - "bo-postgres:/var/lib/postgresql/data"
     networks:
-      - lexicon_definition
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-p${APP_MYSQL_PASSWORD}"]
-      retries: 3
-      timeout: 5s
-  phpmyadmin:
-    depends_on:
-      - mysql
-    image: phpmyadmin
-    ports:
-      - "8090:80"
-    environment:
-      PMA_HOST: mysql
-      MYSQL_ROOT_PASSWORD: ${APP_MYSQL_PASSWORD}
-      UPLOAD_LIMIT: 1G
-      MAX_EXECUTION_TIME: 0
-      MEMORY_LIMIT: 1G
-    networks:
-      - lexicon_definition
+      - lexicon_bo
 
 networks:
-  lexicon_definition:
+  lexicon_bo:
     driver: bridge
 
 volumes:
-  definition-mysql:
+  bo-postgres:
