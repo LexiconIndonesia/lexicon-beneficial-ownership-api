@@ -1,34 +1,26 @@
-package beneficiary_ownership_v1
+package bo_v1_services
 
 import (
 	"context"
+	"lexicon/bo-api/beneficiary_ownership"
 	models "lexicon/bo-api/beneficiary_ownership/v1/models"
-
-	"github.com/jackc/pgx/v5"
+	baseModel "lexicon/bo-api/common/models"
 )
 
-var emptySearchResult []models.SearchResultModel
-
-func searchByQuery(ctx context.Context, tx pgx.Tx, searchRequest models.SearchRequest) ([]models.SearchResultModel, error) {
-
-	var itemCount int
-
-	row := tx.QueryRow(ctx, "SELECT COUNT(id) as cnt FROM cases")
-	err := row.Scan(&itemCount)
+func Search(ctx context.Context, searchRequest models.SearchRequest) (baseModel.BasePaginationResponse, error) {
+	tx, err := beneficiary_ownership.Pool.Begin(ctx)
 
 	if err != nil {
-		return emptySearchResult, err
+		return baseModel.BasePaginationResponse{}, err
 	}
 
-	if itemCount == 0 {
-		return emptySearchResult, nil
+	list, err := models.SearchByRequest(ctx, tx, searchRequest)
+
+	if err != nil {
+		return baseModel.BasePaginationResponse{}, err
 	}
 
-	// rows, err := tx.Query(ctx, "SELECT id, subject, subject_type, person_in_charge, benificiary_ownership, nation, type, year FROM cases ORDER BY id DESC LIMIT $1 OFFSET $2", 10, 0)
+	tx.Commit(ctx)
 
-	// if err != nil {
-	// 	return emptySearchResult, err
-	// }
-
-	return emptySearchResult, nil // change to result of query
+	return list, nil // change to result of query
 }

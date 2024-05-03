@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	pool *pgxpool.Pool
+	Pool *pgxpool.Pool
 )
 
 func SetDatabase(newPool *pgxpool.Pool) error {
@@ -15,6 +15,6 @@ func SetDatabase(newPool *pgxpool.Pool) error {
 	if newPool == nil {
 		return errors.New("cannot assign nil database")
 	}
-	pool = newPool
+	Pool = newPool
 	return nil
 }
