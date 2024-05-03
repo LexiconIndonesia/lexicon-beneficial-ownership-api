@@ -56,10 +56,10 @@ func defaultPgSql() pgSqlConfig {
 }
 
 func (p *pgSqlConfig) loadFromEnv() {
-	loadEnvString("APP_PGSQL_HOST", &p.Host)
-	loadEnvUint("APP_PGSQL_PORT", &p.Port)
-	loadEnvString("APP_PGSQL_DB_NAME", &p.Database)
-	loadEnvString("APP_PGSQL_SSLMODE", &p.SslMode)
+	loadEnvString("APP_POSTGRES_HOST", &p.Host)
+	loadEnvUint("APP_POSTGRES_PORT", &p.Port)
+	loadEnvString("APP_POSTGRES_DB_NAME", &p.Database)
+	loadEnvString("APP_POSTGRES_SSLMODE", &p.SslMode)
 }
 
 type listenConfig struct {
