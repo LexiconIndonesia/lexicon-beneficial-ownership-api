@@ -38,7 +38,6 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, http.StatusBadRequest, errors.New("page must be a number"))
 		return
 	}
-	lastId := qp.Get("last_id")
 
 	if year != "" {
 		yearsSplit := strings.Split(year, "-")
@@ -74,7 +73,6 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		Type:        caseType,
 		Nation:      nation,
 		Page:        int64(pageInt),
-		LastId:      lastId,
 	}
 
 	response, err := bo_v1_services.Search(r.Context(), req)
@@ -83,6 +81,10 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if response.Data == nil {
+		utils.WriteError(w, http.StatusNotFound, errors.New("data not found"))
+		return
+	}
 	utils.WriteResponse(w, response, http.StatusOK)
 }
 
@@ -91,7 +93,7 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 
 	response, err := bo_v1_services.GetDetail(r.Context(), id)
 	if err != nil {
-		utils.WriteError(w, http.StatusInternalServerError, err)
+		utils.WriteError(w, http.StatusNotFound, errors.New("data not found"))
 		return
 	}
 

@@ -40,17 +40,21 @@ type pgSqlConfig struct {
 	Port     uint   `json:"port"`
 	Database string `json:"database"`
 	SslMode  string `json:"ssl_mode"`
+	User     string `json:"user"`
+	Password string `json:"password"`
 }
 
 func (p pgSqlConfig) ConnStr() string {
-	return fmt.Sprintf("host=%s port=%d database=%s sslmode=%s", p.Host, p.Port, p.Database, p.SslMode)
+	return fmt.Sprintf("host=%s port=%d user=%s password=%s database=%s sslmode=%s", p.Host, p.Port, p.User, p.Password, p.Database, p.SslMode)
 }
 
 func defaultPgSql() pgSqlConfig {
 	return pgSqlConfig{
 		Host:     "localhost",
 		Port:     5432,
-		Database: "todo",
+		Database: "lexicon_beneficiary_ownership",
+		User:     "",
+		Password: "",
 		SslMode:  "disable",
 	}
 }
@@ -60,6 +64,8 @@ func (p *pgSqlConfig) loadFromEnv() {
 	loadEnvUint("APP_POSTGRES_PORT", &p.Port)
 	loadEnvString("APP_POSTGRES_DB_NAME", &p.Database)
 	loadEnvString("APP_POSTGRES_SSLMODE", &p.SslMode)
+	loadEnvString("APP_POSTGRES_USERNAME", &p.User)
+	loadEnvString("APP_POSTGRES_PASSWORD", &p.Password)
 }
 
 type listenConfig struct {

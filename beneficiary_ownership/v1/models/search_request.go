@@ -7,5 +7,4 @@ type SearchRequest struct {
 	Type        string   `json:"type"`
 	Nation      string   `json:"nation"`
 	Page        int64    `json:"page"`
-	LastId      string   `json:"last_id"`
 }

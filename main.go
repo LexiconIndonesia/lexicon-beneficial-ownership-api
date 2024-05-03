@@ -23,8 +23,6 @@ func main() {
 	cfg := defaultConfig()
 	cfg.loadFromEnv()
 
-	log.Debug().Any("config", cfg).Msg("config loaded")
-
 	ctx := context.Background()
 	// INITIATE DATABASES
 
