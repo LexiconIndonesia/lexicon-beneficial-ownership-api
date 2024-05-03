@@ -5,7 +5,9 @@ go 1.21.3
 require (
 	github.com/go-chi/chi v1.5.5
 	github.com/joho/godotenv v1.5.1
+	github.com/oklog/ulid/v2 v2.1.0
 	github.com/rs/zerolog v1.31.0
+	gopkg.in/guregu/null.v4 v4.0.0
 )
 
 require (

@@ -7,16 +7,17 @@ import (
 	"strings"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/oklog/ulid/v2"
 	"github.com/rs/zerolog/log"
+	"gopkg.in/guregu/null.v4"
 )
 
 type SearchResultModel struct {
-	ID                   string      `json:"id"`
+	ID                   ulid.ULID   `json:"id"`
 	Subject              string      `json:"subject"`
 	SubjectType          string      `json:"subject_type"`
-	PersonInCharge       pgtype.Text `json:"person_in_charge"`
-	BenificiaryOwnership pgtype.Text `json:"benificiary_ownership"`
+	PersonInCharge       null.String `json:"person_in_charge"`
+	BenificiaryOwnership null.String `json:"benificiary_ownership"`
 	Nation               string      `json:"nation"`
 	Type                 string      `json:"type"`
 	Year                 string      `json:"year"`

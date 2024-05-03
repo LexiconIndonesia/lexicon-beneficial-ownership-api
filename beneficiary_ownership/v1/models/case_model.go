@@ -4,22 +4,23 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/oklog/ulid/v2"
 	"github.com/rs/zerolog/log"
+	"gopkg.in/guregu/null.v4"
 )
 
 type DetailResultModel struct {
-	ID                   string      `json:"id"`
+	ID                   ulid.ULID   `json:"id"`
 	Subject              string      `json:"subject"`
 	SubjectType          string      `json:"subject_type"`
-	PersonInCharge       pgtype.Text `json:"person_in_charge"`
-	BenificiaryOwnership pgtype.Text `json:"benificiary_ownership"`
-	Date                 pgtype.Date `json:"date"`
-	DecisionNumber       pgtype.Text `json:"decision_number"`
+	PersonInCharge       null.String `json:"person_in_charge"`
+	BenificiaryOwnership null.String `json:"benificiary_ownership"`
+	Date                 null.Time   `json:"date"`
+	DecisionNumber       null.String `json:"decision_number"`
 	Source               string      `json:"source"`
 	Link                 string      `json:"link"`
 	Nation               string      `json:"nation"`
-	PunishmentDuration   pgtype.Text `json:"punishment_duration"`
+	PunishmentDuration   null.String `json:"punishment_duration"`
 	Type                 string      `json:"type"`
 	Year                 string      `json:"year"`
 	Summary              string      `json:"summary"`
