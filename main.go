@@ -1,14 +1,16 @@
 package main
 
 import (
-	"database/sql"
-	"lexicon/go-template/module"
+	"context"
+	bo "lexicon/bo-api/beneficiary_ownership"
+	bo_v1 "lexicon/bo-api/beneficiary_ownership/v1"
 	"net/http"
 
 	"github.com/rs/zerolog/log"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 )
 
@@ -21,19 +23,18 @@ func main() {
 	cfg := defaultConfig()
 	cfg.loadFromEnv()
 
-	log.Debug().Any("config", cfg).Msg("config loaded")
-
+	ctx := context.Background()
 	// INITIATE DATABASES
 
-	// MYSQL
-	mysqlClient, err := sql.Open("mysql", cfg.MySql.ConnStr())
+	// PGSQL
+	pgsqlClient, err := pgxpool.New(ctx, cfg.PgSql.ConnStr())
 
 	if err != nil {
-		log.Error().Err(err).Msg("Unable to connect to MySQL Database")
+		log.Error().Err(err).Msg("Unable to connect to PGSQL Database")
 	}
-	defer mysqlClient.Close()
+	defer pgsqlClient.Close()
 
-	module.SetDatabase(mysqlClient)
+	bo.SetDatabase(pgsqlClient)
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
@@ -47,7 +48,7 @@ func main() {
 	// r.Use(middleware.Timeout(60 * time.Second))
 
 	r.Route("/v1", func(r chi.Router) {
-		r.Mount("/test", module.Router())
+		r.Mount("/beneficiary-ownership", bo_v1.Router())
 	})
 
 	log.Info().Msg("Starting up server...")

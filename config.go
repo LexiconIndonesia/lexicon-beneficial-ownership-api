@@ -33,36 +33,39 @@ func loadEnvUint(key string, result *uint) {
 /*
 *
 
-	MYSQL Configuration
+	PgSQL Configuration
 */
-type mysqlConfig struct {
+type pgSqlConfig struct {
 	Host     string `json:"host"`
 	Port     uint   `json:"port"`
 	Database string `json:"database"`
-	Username string `json:"username"`
+	SslMode  string `json:"ssl_mode"`
+	User     string `json:"user"`
 	Password string `json:"password"`
 }
 
-func (m mysqlConfig) ConnStr() string {
-	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", m.Username, m.Password, m.Host, m.Port, m.Database)
+func (p pgSqlConfig) ConnStr() string {
+	return fmt.Sprintf("host=%s port=%d user=%s password=%s database=%s sslmode=%s", p.Host, p.Port, p.User, p.Password, p.Database, p.SslMode)
 }
 
-func defaultMysqlConfig() mysqlConfig {
-	return mysqlConfig{
+func defaultPgSql() pgSqlConfig {
+	return pgSqlConfig{
 		Host:     "localhost",
-		Port:     3306,
-		Database: "document",
-		Username: "root",
-		Password: "password",
+		Port:     5432,
+		Database: "lexicon_beneficiary_ownership",
+		User:     "",
+		Password: "",
+		SslMode:  "disable",
 	}
 }
 
-func (m *mysqlConfig) loadFromEnv() {
-	loadEnvString("APP_MYSQL_HOST", &m.Host)
-	loadEnvUint("APP_MYSQL_PORT", &m.Port)
-	loadEnvString("APP_MYSQL_DB_NAME", &m.Database)
-	loadEnvString("APP_MYSQL_USERNAME", &m.Username)
-	loadEnvString("APP_MYSQL_PASSWORD", &m.Password)
+func (p *pgSqlConfig) loadFromEnv() {
+	loadEnvString("APP_POSTGRES_HOST", &p.Host)
+	loadEnvUint("APP_POSTGRES_PORT", &p.Port)
+	loadEnvString("APP_POSTGRES_DB_NAME", &p.Database)
+	loadEnvString("APP_POSTGRES_SSLMODE", &p.SslMode)
+	loadEnvString("APP_POSTGRES_USERNAME", &p.User)
+	loadEnvString("APP_POSTGRES_PASSWORD", &p.Password)
 }
 
 type listenConfig struct {
@@ -90,17 +93,17 @@ func (l *listenConfig) loadFromEnv() {
 
 type config struct {
 	Listen listenConfig `json:"listen"`
-	MySql  mysqlConfig  `json:"mysql"`
+	PgSql  pgSqlConfig  `json:"pgsql"`
 }
 
 func (c *config) loadFromEnv() {
 	c.Listen.loadFromEnv()
-	c.MySql.loadFromEnv()
+	c.PgSql.loadFromEnv()
 }
 
 func defaultConfig() config {
 	return config{
 		Listen: defaultListenConfig(),
-		MySql:  defaultMysqlConfig(),
+		PgSql:  defaultPgSql(),
 	}
 }
