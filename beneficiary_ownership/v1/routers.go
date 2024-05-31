@@ -24,10 +24,10 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 
 	qp := r.URL.Query()
 	query := qp.Get("query")
-	subjectType := qp.Get("subject_type")
+	subjectTypes := strings.Split(qp.Get("subject_type"), ",")
 	year := qp.Get("year")
-	caseType := qp.Get("type")
-	nation := qp.Get("nation")
+	caseTypes := strings.Split(qp.Get("type"), ",")
+	nations := strings.Split(qp.Get("nation"), ",")
 	page := qp.Get("page")
 
 	years := []string{}
@@ -67,12 +67,12 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	req := models.SearchRequest{
-		Query:       query,
-		SubjectType: subjectType,
-		Years:       years,
-		Type:        caseType,
-		Nation:      nation,
-		Page:        int64(pageInt),
+		Query:        query,
+		SubjectTypes: subjectTypes,
+		Years:        years,
+		Types:        caseTypes,
+		Nations:      nations,
+		Page:         int64(pageInt),
 	}
 
 	response, err := bo_v1_services.Search(r.Context(), req)
