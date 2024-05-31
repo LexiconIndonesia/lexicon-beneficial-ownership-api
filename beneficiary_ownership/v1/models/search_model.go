@@ -49,7 +49,7 @@ func SearchByRequest(ctx context.Context, tx pgx.Tx, searchRequest SearchRequest
 	`
 	log.Info().Msg("Executing query: " + countQuery)
 
-	row := tx.QueryRow(ctx, countQuery, searchRequest.Query, searchRequest.SubjectType, normalizeYears(searchRequest.Years), searchRequest.Type, searchRequest.Nation)
+	row := tx.QueryRow(ctx, countQuery, searchRequest.Query, normalizeSubjectTypes(searchRequest.SubjectTypes), normalizeYears(searchRequest.Years), normalizeCaseTypes(searchRequest.Types), normalizeNations(searchRequest.Nations))
 	err := row.Scan(&itemCount)
 	log.Info().Msg("Finish counting query")
 
@@ -62,8 +62,7 @@ func SearchByRequest(ctx context.Context, tx pgx.Tx, searchRequest SearchRequest
 	}
 
 	log.Info().Msg("Start searching query")
-	searchQuery := `
-	SELECT id, subject, subject_type, person_in_charge, benificiary_ownership, nation, type, year`
+	searchQuery := `SELECT id, subject, subject_type, person_in_charge, benificiary_ownership, nation, type, year`
 
 	if searchRequest.Query != "" {
 		searchQuery += ", ts_rank_cd(fulltext_search_index, phraseto_tsquery('english', $1), 32 /* rank/(rank+1) */ ) AS rank "
@@ -94,7 +93,7 @@ func SearchByRequest(ctx context.Context, tx pgx.Tx, searchRequest SearchRequest
 
 	log.Info().Msg("Executing query: " + searchQuery)
 
-	rows, err := tx.Query(ctx, searchQuery, searchRequest.Query, searchRequest.SubjectType, normalizeYears(searchRequest.Years), searchRequest.Type, searchRequest.Nation, limit, offset)
+	rows, err := tx.Query(ctx, searchQuery, searchRequest.Query, normalizeSubjectTypes(searchRequest.SubjectTypes), normalizeYears(searchRequest.Years), normalizeCaseTypes(searchRequest.Types), normalizeNations(searchRequest.Nations), limit, offset)
 
 	log.Info().Msg("Finish searching query")
 	if err != nil {
@@ -139,4 +138,16 @@ func SearchByRequest(ctx context.Context, tx pgx.Tx, searchRequest SearchRequest
 
 func normalizeYears(years []string) string {
 	return strings.Join(years, "|")
+}
+
+func normalizeCaseTypes(caseTypes []string) string {
+	return strings.Join(caseTypes, "|")
+}
+
+func normalizeNations(nations []string) string {
+	return strings.Join(nations, "|")
+}
+
+func normalizeSubjectTypes(subjectTypes []string) string {
+	return strings.Join(subjectTypes, "|")
 }
