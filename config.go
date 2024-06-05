@@ -30,11 +30,7 @@ func loadEnvUint(key string, result *uint) {
 
 /* Configuration */
 
-/*
-*
-
-	PgSQL Configuration
-*/
+/* PgSQL Configuration */
 type pgSqlConfig struct {
 	Host     string `json:"host"`
 	Port     uint   `json:"port"`
@@ -68,6 +64,8 @@ func (p *pgSqlConfig) loadFromEnv() {
 	loadEnvString("APP_POSTGRES_PASSWORD", &p.Password)
 }
 
+/* Listen Configuration */
+
 type listenConfig struct {
 	Host string `json:"host"`
 	Port uint   `json:"port"`
@@ -85,25 +83,29 @@ func defaultListenConfig() listenConfig {
 }
 
 func (l *listenConfig) loadFromEnv() {
-
 	loadEnvString("APP_LISTEN_HOST", &l.Host)
 	loadEnvUint("APP_LISTEN_PORT", &l.Port)
-
 }
 
 type config struct {
-	Listen listenConfig `json:"listen"`
-	PgSql  pgSqlConfig  `json:"pgsql"`
+	Listen        listenConfig `json:"listen"`
+	PgSql         pgSqlConfig  `json:"pgsql"`
+	BackendApiKey string       `json:"api_key"`
+	ServerSalt    string       `json:"salt"`
 }
 
 func (c *config) loadFromEnv() {
 	c.Listen.loadFromEnv()
 	c.PgSql.loadFromEnv()
+	loadEnvString("API_KEY", &c.BackendApiKey)
+	loadEnvString("SALT", &c.ServerSalt)
 }
 
 func defaultConfig() config {
 	return config{
-		Listen: defaultListenConfig(),
-		PgSql:  defaultPgSql(),
+		Listen:        defaultListenConfig(),
+		PgSql:         defaultPgSql(),
+		BackendApiKey: "", // TODO: Default value ​​need to be defined
+		ServerSalt:    "", // TODO: Default value ​​need to be defined
 	}
 }
