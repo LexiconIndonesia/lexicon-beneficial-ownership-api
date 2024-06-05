@@ -4,6 +4,7 @@ import (
 	"context"
 	bo "lexicon/bo-api/beneficiary_ownership"
 	bo_v1 "lexicon/bo-api/beneficiary_ownership/v1"
+	middlewares "lexicon/bo-api/middlewares"
 	"net/http"
 
 	"github.com/rs/zerolog/log"
@@ -48,6 +49,9 @@ func main() {
 	// r.Use(middleware.Timeout(60 * time.Second))
 
 	r.Route("/v1", func(r chi.Router) {
+		r.Use(middlewares.AccessTime())
+		r.Use(middlewares.ApiKey(cfg.BackendApiKey, cfg.ServerSalt))
+		r.Use(middlewares.RequestSignature(cfg.ServerSalt))
 		r.Mount("/beneficiary-ownership", bo_v1.Router())
 	})
 
