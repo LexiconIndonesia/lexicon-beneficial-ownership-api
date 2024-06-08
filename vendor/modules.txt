@@ -5,6 +5,13 @@ github.com/go-chi/chi/middleware
 # github.com/go-chi/cors v1.2.1
 ## explicit; go 1.14
 github.com/go-chi/cors
+# github.com/golang-module/carbon/v2 v2.3.12
+## explicit; go 1.16
+github.com/golang-module/carbon/v2
+github.com/golang-module/carbon/v2/calendar
+github.com/golang-module/carbon/v2/calendar/julian
+github.com/golang-module/carbon/v2/calendar/lunar
+github.com/golang-module/carbon/v2/calendar/persian
 # github.com/jackc/pgpassfile v1.0.0
 ## explicit; go 1.12
 github.com/jackc/pgpassfile

@@ -1,4 +1,4 @@
-package beneficiary_ownership_v1
+package bo_v1
 
 import (
 	"errors"

@@ -5,6 +5,7 @@ go 1.21.3
 require (
 	github.com/go-chi/chi v1.5.5
 	github.com/go-chi/cors v1.2.1
+	github.com/golang-module/carbon/v2 v2.3.12
 	github.com/joho/godotenv v1.5.1
 	github.com/oklog/ulid/v2 v2.1.0
 	github.com/rs/zerolog v1.31.0

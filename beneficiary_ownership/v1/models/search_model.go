@@ -1,4 +1,4 @@
-package beneficiary_ownership_v1_models
+package bo_v1_models
 
 import (
 	"context"
