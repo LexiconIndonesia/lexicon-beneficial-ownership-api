@@ -7,25 +7,52 @@ services:
   #     - ${APP_LISTEN_PORT}:${APP_LISTEN_PORT}
   #   depends_on:
   #     - postgres
+  #     - redis
+  #     - elasticsearch
   #   volumes:
   #     - ./:/app
   #   networks:
   #     - lexicon_bo
+
   postgres:
     image: "postgres:16.2"
     ports:
-      - ${APP_POSTGRES_PORT}:${APP_POSTGRES_PORT}
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
     environment:
-      POSTGRES_ROOT_PASSWORD: "${APP_POSTGRES_PASSWORD}"
+      POSTGRES_ROOT_PASSWORD: "${POSTGRES_PASSWORD}"
       POSTGRES_ROOT_HOST: "%"
-      POSTGRES_DATABASE: "${APP_POSTGRES_DB_NAME}"
-      POSTGRES_USER: "${APP_POSTGRES_USERNAME}"
-      POSTGRES_PASSWORD: "${APP_POSTGRES_PASSWORD}"
+      POSTGRES_DATABASE: "${POSTGRES_DB_NAME}"
+      POSTGRES_USER: "${POSTGRES_USERNAME}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
       POSTGRES_ALLOW_EMPTY_PASSWORD: 1
     volumes:
       - "bo-postgres:/var/lib/postgresql/data"
     networks:
       - lexicon_bo
+  redis:
+    image: "redis:7.2-alpine"
+    restart: always
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}
+    networks:
+      - lexicon_bo
+    volumes:
+      - redis:/data
+
+  elasticsearch:
+    image: elasticsearch:8.14.0
+    ports:
+      - ${ELASTIC_SEARCH_API_PORT}:${ELASTIC_SEARCH_API_PORT}
+      - ${ELASTIC_SEARCH_TRANSPORT_PORT}:${ELASTIC_SEARCH_TRANSPORT_PORT}
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=${ELASTIC_SEARCH_PASS}
+    networks:
+      - lexicon_bo
+    volumes:
+      - elasticsearch:/usr/share/elasticsearch/data
 
 networks:
   lexicon_bo:
@@ -33,3 +60,8 @@ networks:
 
 volumes:
   bo-postgres:
+    driver: local
+  redis:
+    driver: local
+  elasticsearch:
+    driver: local

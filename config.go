@@ -56,12 +56,12 @@ func defaultPgSql() pgSqlConfig {
 }
 
 func (p *pgSqlConfig) loadFromEnv() {
-	loadEnvString("APP_POSTGRES_HOST", &p.Host)
-	loadEnvUint("APP_POSTGRES_PORT", &p.Port)
-	loadEnvString("APP_POSTGRES_DB_NAME", &p.Database)
+	loadEnvString("POSTGRES_HOST", &p.Host)
+	loadEnvUint("POSTGRES_PORT", &p.Port)
+	loadEnvString("POSTGRES_DB_NAME", &p.Database)
 	loadEnvString("APP_POSTGRES_SSLMODE", &p.SslMode)
-	loadEnvString("APP_POSTGRES_USERNAME", &p.User)
-	loadEnvString("APP_POSTGRES_PASSWORD", &p.Password)
+	loadEnvString("POSTGRES_USERNAME", &p.User)
+	loadEnvString("POSTGRES_PASSWORD", &p.Password)
 }
 
 /* Listen Configuration */
