@@ -1,4 +1,4 @@
-package beneficiary_ownership_v1_repositories
+package bo_v1_repositories
 
 import (
 	"context"

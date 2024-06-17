@@ -1,4 +1,4 @@
-package beneficiary_ownership_v1
+package bo_v1
 
 import (
 	"errors"
@@ -24,9 +24,22 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 
 	qp := r.URL.Query()
 	query := qp.Get("query")
-	subjectTypes := strings.Split(qp.Get("subject_type"), ",")
+	rawSubjectType := qp.Get("subject_type")
+	var subjectTypes []string
+
+	if rawSubjectType != "" {
+		subjectTypes = strings.Split(rawSubjectType, ",")
+	}
+
 	year := qp.Get("year")
-	caseTypes := strings.Split(qp.Get("type"), ",")
+	rawType := qp.Get("type")
+
+	var caseTypes []string
+
+	if rawType != "" {
+		caseTypes = strings.Split(rawType, ",")
+	}
+
 	nations := strings.Split(qp.Get("nation"), ",")
 	page := qp.Get("page")
 
