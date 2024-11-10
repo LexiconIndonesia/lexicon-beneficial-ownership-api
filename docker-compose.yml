@@ -40,19 +40,19 @@ services:
     volumes:
       - redis:/data
 
-  elasticsearch:
-    image: elasticsearch:8.14.0
-    ports:
-      - ${ELASTIC_SEARCH_API_PORT}:${ELASTIC_SEARCH_API_PORT}
-      - ${ELASTIC_SEARCH_TRANSPORT_PORT}:${ELASTIC_SEARCH_TRANSPORT_PORT}
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=true
-      - ELASTIC_PASSWORD=${ELASTIC_SEARCH_PASS}
-    networks:
-      - lexicon_bo
-    volumes:
-      - elasticsearch:/usr/share/elasticsearch/data
+  # elasticsearch:
+  #   image: elasticsearch:8.14.0
+  #   ports:
+  #     - ${ELASTIC_SEARCH_API_PORT}:${ELASTIC_SEARCH_API_PORT}
+  #     - ${ELASTIC_SEARCH_TRANSPORT_PORT}:${ELASTIC_SEARCH_TRANSPORT_PORT}
+  #   environment:
+  #     - discovery.type=single-node
+  #     - xpack.security.enabled=true
+  #     - ELASTIC_PASSWORD=${ELASTIC_SEARCH_PASS}
+  #   networks:
+  #     - lexicon_bo
+  #   volumes:
+  #     - elasticsearch:/usr/share/elasticsearch/data
 
 networks:
   lexicon_bo:
@@ -63,5 +63,5 @@ volumes:
     driver: local
   redis:
     driver: local
-  elasticsearch:
-    driver: local
+  # elasticsearch:
+  #   driver: local
