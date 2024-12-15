@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	baseResponse "lexicon/bo-api/common/models"
 	"net/http"
+
+	"github.com/rs/zerolog/log"
 )
 
 // WriteMessage writes a JSON response with a custom message and status code.
@@ -23,6 +25,8 @@ func WriteMessage(w http.ResponseWriter, status int, msg string) {
 func WriteResponse(w http.ResponseWriter, content interface{}, status int) {
 	w.Header().Add("content-type", "application/json")
 	w.WriteHeader(status)
+
+	log.Info().Msgf("Response: %s", content)
 
 	json.NewEncoder(w).Encode(content)
 }

@@ -3,6 +3,9 @@ package main
 import (
 	"context"
 	bo "lexicon/bo-api/beneficiary_ownership"
+	"lexicon/bo-api/common/utils"
+	"net/http"
+	"time"
 
 	"github.com/golang-module/carbon/v2"
 
@@ -41,6 +44,11 @@ func main() {
 
 	bo.SetDatabase(pgsqlClient)
 
+	// init httpClient
+	httpClient := http.Client{
+		Timeout: time.Minute * 5,
+	}
+	utils.SetClient(&httpClient)
 	// INITIATE SERVER
 	server, err := NewLexiconBOServer(cfg)
 
