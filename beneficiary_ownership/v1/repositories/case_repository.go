@@ -53,3 +53,31 @@ func GetDetailById(ctx context.Context, tx pgx.Tx, id string) (DetailResultModel
 	log.Info().Msg("Data Found")
 	return result, nil
 }
+
+func GetIdsByCaseNumbers(ctx context.Context, tx pgx.Tx, caseNumbers []string) ([]string, error) {
+	var ids []string
+
+	query := `
+	SELECT id
+	FROM cases
+	WHERE decision_number = ANY($1)
+	`
+
+	row, err := tx.Query(ctx, query, caseNumbers)
+	if err != nil {
+		log.Err(err).Msg("Error executing query")
+		return nil, err
+	}
+	defer row.Close()
+	for row.Next() {
+		var id string
+		err := row.Scan(&id)
+		if err != nil {
+			log.Err(err).Msg("Error scanning row")
+			return nil, err
+		}
+		ids = append(ids, id)
+	}
+
+	return ids, nil
+}

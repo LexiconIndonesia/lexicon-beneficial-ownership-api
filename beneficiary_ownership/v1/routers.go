@@ -1,15 +1,18 @@
 package bo_v1
 
 import (
+	"encoding/json"
 	"errors"
 	models "lexicon/bo-api/beneficiary_ownership/v1/models"
 	bo_v1_services "lexicon/bo-api/beneficiary_ownership/v1/services"
 	"lexicon/bo-api/common/utils"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 
 	"github.com/go-chi/chi"
+	"github.com/rs/zerolog/log"
 )
 
 func Router() *chi.Mux {
@@ -18,6 +21,8 @@ func Router() *chi.Mux {
 	r.Get("/search", searchHandler)
 	r.Get("/detail/{id}", detailHandler)
 	r.Get("/chart", chartHandler)
+	r.Post("/chatbot", chatbotHandler)
+	r.Post("/chatbot/references", chatbotReferenceHandler)
 	return r
 }
 
@@ -122,4 +127,68 @@ func chartHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.WriteData(w, response, http.StatusOK)
+}
+
+func chatbotHandler(w http.ResponseWriter, r *http.Request) {
+	req := models.ChatbotRequest{}
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		log.Error().Err(err).Msg("Error decoding request body")
+		utils.WriteError(w, http.StatusBadRequest, errors.New("body is empty"))
+		return
+	}
+	defer r.Body.Close()
+
+	chatReq, err := http.NewRequestWithContext(r.Context(), "POST", "https://7627-103-121-108-197.ngrok-free.app/chatbot/user_message", nil)
+	if err != nil {
+		log.Error().Err(err).Msg("Error creating request")
+		utils.WriteError(w, http.StatusNotFound, errors.New("data not found"))
+		return
+	}
+
+	chatReq.Header.Set("Accept", "application/json")
+	chatReq.Header.Set("Content-Type", "application/json")
+
+	params := url.Values{}
+	params.Add("thread_id", req.ThreadID)
+	params.Add("user_message", req.UserMessage)
+
+	chatReq.URL.RawQuery = params.Encode()
+
+	log.Info().Msgf("Chatbot request: %s", chatReq.URL.String())
+	chatResp, err := utils.Client.Do(chatReq)
+	if err != nil {
+		utils.WriteError(w, http.StatusNotFound, errors.New("data not found"))
+		return
+	}
+
+	defer chatResp.Body.Close()
+
+	response := models.ChatbotResponse{}
+
+	err = json.NewDecoder(chatResp.Body).Decode(&response)
+	if err != nil {
+		log.Error().Err(err).Msg("Error decoding response body")
+		utils.WriteError(w, http.StatusBadRequest, errors.New("body is empty"))
+		return
+	}
+
+	utils.WriteData(w, response, http.StatusOK)
+}
+
+func chatbotReferenceHandler(w http.ResponseWriter, r *http.Request) {
+	req := models.ChatbotReferenceRequest{}
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		log.Error().Err(err).Msg("Error decoding request body")
+		utils.WriteError(w, http.StatusBadRequest, errors.New("body is empty"))
+		return
+	}
+	urls, err := bo_v1_services.GetUrlByCaseNumber(r.Context(), req.CaseNumbers)
+	if err != nil {
+		log.Error().Err(err).Msg("Error getting urls")
+		utils.WriteError(w, http.StatusNotFound, errors.New("data not found"))
+		return
+	}
+	utils.WriteData(w, urls, http.StatusOK)
 }
